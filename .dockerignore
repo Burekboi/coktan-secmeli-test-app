@@ -1,0 +1,33 @@
+# Maven build output
+target/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+
+# VS Code
+.vscode/
+
+# Git metadata
+.git/
+.gitignore
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+
+# Docker files (isterseniz .dockerignore içinde hariç tutabilirsiniz)
+docker-compose.yml
+Dockerfile
+
+# Log dosyaları
+logs/
+*.log
+
+# IDE çalışma alanı
+*.ipr
+*.iws
+
+# Geçici / override dosyaları
+*.tmp
+*.swp
