@@ -20,7 +20,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         // Sadece CSS/JS izinli, login/logout işlemleri permitAll()’ta açılacak:
-                        .requestMatchers("/WEB-INF/**").permitAll()
+                        .requestMatchers("/WEB-INF/**", "/login", "/perform_login", "/css/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

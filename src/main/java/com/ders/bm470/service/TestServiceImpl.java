@@ -20,6 +20,18 @@ public class TestServiceImpl implements TestService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public Test getTestWithAllDetails(Long id) {
+        return testRepository.findById(id)
+                .map(test -> {
+                    // questions ve her bir question'ın choices listesini initialize et
+                    test.getQuestions().forEach(q -> q.getChoices().size());
+                    return test;
+                })
+                .orElse(null);
+    }
+
+    @Override
     @Transactional
     public Test saveTest(Test test) {
         System.out.println("Saving test");

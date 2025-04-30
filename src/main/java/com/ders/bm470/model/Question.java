@@ -14,6 +14,8 @@ import java.util.List;
 @ToString
 public class Question {
 
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,6 +26,14 @@ public class Question {
     @JoinColumn(name = "test_id")
     private Test test;
 
+    public void setTest(Test test) {
+        this.test = test;
+    }
+
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Choice> choices;
+
+
 }
+
+

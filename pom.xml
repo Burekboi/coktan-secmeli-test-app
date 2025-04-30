@@ -20,7 +20,7 @@
     <mysql.connector.version>8.3.0</mysql.connector.version>
     <slf4j.version>2.0.12</slf4j.version>
     <log4j2.version>2.23.1</log4j2.version>
-    <lombok.version>1.18.30</lombok.version>
+    <lombok.version>1.18.32</lombok.version>
     <servlet.api.version>6.0.0</servlet.api.version> <!-- Tomcat 11 Servlet 6.0 -->
     <jsp.api.version>3.1.0</jsp.api.version>
     <jstl.version>3.0.0</jstl.version>
@@ -179,10 +179,18 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.11.0</version>
         <configuration>
-          <source>21</source>
-          <target>21</target>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>org.projectlombok</groupId>
+              <artifactId>lombok</artifactId>
+              <version>${lombok.version}</version>
+            </path>
+          </annotationProcessorPaths>
         </configuration>
       </plugin>
+
 
       <!-- Maven WAR Plugin -->
       <plugin>

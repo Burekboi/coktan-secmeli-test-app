@@ -9,4 +9,7 @@ public interface TestService {
     List<Test> getAllTests();
     Test getTestById(Long id);
     void deleteTest(Long id);
+    Test getTestWithAllDetails(Long id);
+
+
 }

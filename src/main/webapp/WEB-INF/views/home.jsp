@@ -56,8 +56,12 @@
                                         <td>
                                             <a href="<c:url value='/tests/edit/${test.id}' />" class="btn btn-sm btn-warning">Düzenle</a>
                                             <a href="<c:url value='/tests/delete/${test.id}' />" class="btn btn-sm btn-danger" onclick="return confirm('Testi silmek istediğinize emin misiniz?');">Sil</a>
+                                            <a href="<c:url value='/questions/create?testId=${test.id}'/>"
+                                               class="btn btn-sm btn-info">Soru Ekle</a>
+                                            <a href="<c:url value='/tests/detail/${test.id}'/>" class="btn btn-sm btn-info">Detaylar</a>
                                         </td>
                                     </tr>
+
                                 </c:forEach>
                                 </tbody>
                             </table>

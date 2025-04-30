@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 @Controller
 @RequestMapping("/tests")
@@ -31,7 +33,18 @@ public class TestController {
         System.out.println("Formdan gelen test: " + test);
         Test savedTest = testService.saveTest(test);
         System.out.println("Kaydedilen test: " + savedTest);
-        return "redirect:/home";
+        return "redirect:/tests/detail/" + savedTest.getId();
+    }
+
+
+    @GetMapping("/detail/{testId}")
+    public String showTestDetail(@PathVariable("testId") Long testId, Model model) {
+        Test test = testService.getTestWithAllDetails(testId);
+        if (test == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Test bulunamadı: " + testId);
+        }
+        model.addAttribute("test", test);
+        return "test_detail";
     }
 
 
