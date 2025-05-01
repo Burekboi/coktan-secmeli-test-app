@@ -1,29 +1,39 @@
+<%@ page    contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="layout" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="c"   uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ page    contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"  %>
+<fmt:setLocale value="${param.lang == 'en' ? 'en' : 'tr'}" scope="session"/>
+<fmt:setBundle basename="messages" />
 
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
 
-<layout:layout pageTitle="Ana Sayfa">
+<fmt:setLocale value="${param.lang == 'en' ? 'en' : 'tr'}" scope="session"/>
+<fmt:setBundle basename="messages"/>
+
+<layout:layout pageTitle="<fmt:message key='label.homePage'/>">
     <c:choose>
         <c:when test="${isAdmin}">
             <div class="row justify-content-center">
                 <div class="col-md-10">
                     <div class="card shadow-sm">
                         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                            <h4 class="mb-0">Test Yönetimi</h4>
+                            <h4 class="mb-0"><fmt:message key="header.testManagement"/></h4>
                             <button type="button"
                                     class="btn btn-light btn-sm edit-test-btn"
                                     data-test-id=""
                                     data-test-name=""
                                     id="newTestBtn">
-                                Yeni Test Oluştur
+                                <fmt:message key="button.newTest"/>
                             </button>
                         </div>
                         <div class="card-body">
                             <table class="table table-striped">
                                 <thead>
-                                <tr><th>#</th><th>Test Adı</th><th>İşlemler</th></tr>
+                                <tr>
+                                    <th>#</th>
+                                    <th><fmt:message key="header.testName"/></th>
+                                    <th><fmt:message key="header.actions"/></th>
+                                </tr>
                                 </thead>
                                 <tbody>
                                 <c:forEach var="test" items="${tests}" varStatus="status">
@@ -35,21 +45,21 @@
                                                     class="btn btn-sm btn-warning edit-test-btn"
                                                     data-test-id="${test.id}"
                                                     data-test-name="${test.name}">
-                                                Düzenle
+                                                <fmt:message key="button.edit"/>
                                             </button>
                                             <a href="#"
                                                class="btn btn-sm btn-danger delete-test-btn"
                                                data-delete-url="${ctx}/tests/delete/${test.id}">
-                                                Sil
+                                                <fmt:message key="button.delete"/>
                                             </a>
                                             <button type="button"
                                                     class="btn btn-sm btn-info create-question-btn"
                                                     data-test-id="${test.id}">
-                                                Soru Ekle
+                                                <fmt:message key="button.addQuestion"/>
                                             </button>
                                             <a href="<c:url value='/tests/detail/${test.id}'/>"
                                                class="btn btn-sm btn-info">
-                                                Detaylar
+                                                <fmt:message key="button.details"/>
                                             </a>
                                         </td>
                                     </tr>
@@ -66,7 +76,7 @@
                 <div class="col-md-8">
                     <div class="card shadow-sm">
                         <div class="card-header bg-success text-white">
-                            <h4>Test Çözme Paneli</h4>
+                            <h4><fmt:message key="header.solvePanel"/></h4>
                         </div>
                         <div class="card-body">
                             <ul class="list-group list-group-flush">
@@ -75,7 +85,7 @@
                                             ${test.name}
                                         <a href="<c:url value='/tests/solve/${test.id}'/>"
                                            class="btn btn-sm btn-success">
-                                            Testi Çöz
+                                            <fmt:message key="button.solveTest"/>
                                         </a>
                                     </li>
                                 </c:forEach>
@@ -93,18 +103,24 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="confirmDeleteLabel">Silme Onayı</h5>
+                    <h5 class="modal-title" id="confirmDeleteLabel">
+                        <fmt:message key="modal.deleteTitle"/>
+                    </h5>
                     <button type="button" class="btn-close"
                             data-bs-dismiss="modal" aria-label="Kapat"></button>
                 </div>
                 <div class="modal-body">
-                    Bu öğeyi silmek istediğinize emin misiniz?
+                    <fmt:message key="modal.deleteMessage"/>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary"
-                            data-bs-dismiss="modal">İptal</button>
+                            data-bs-dismiss="modal">
+                        <fmt:message key="button.cancel"/>
+                    </button>
                     <button type="button" class="btn btn-danger"
-                            id="confirmDeleteBtn">Sil</button>
+                            id="confirmDeleteBtn">
+                        <fmt:message key="button.delete"/>
+                    </button>
                 </div>
             </div>
         </div>
@@ -117,21 +133,29 @@
             <div class="modal-content">
                 <form id="editTestForm" method="post">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="editTestLabel">Test Düzenle</h5>
+                        <h5 class="modal-title" id="editTestLabel">
+                            <fmt:message key="modal.editTestTitle"/>
+                        </h5>
                         <button type="button" class="btn-close"
                                 data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label for="testName" class="form-label">Test Adı</label>
+                            <label for="testName" class="form-label">
+                                <fmt:message key="label.testName"/>
+                            </label>
                             <input type="text" class="form-control"
                                    id="testName" name="name" required/>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary"
-                                data-bs-dismiss="modal">İptal</button>
-                        <button type="submit" class="btn btn-primary">Kaydet</button>
+                                data-bs-dismiss="modal">
+                            <fmt:message key="button.cancel"/>
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <fmt:message key="button.save"/>
+                        </button>
                     </div>
                 </form>
             </div>
@@ -145,26 +169,35 @@
             <div class="modal-content">
                 <form id="createQuestionForm" method="post">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="createQuestionLabel">Yeni Soru Ekle</h5>
+                        <h5 class="modal-title" id="createQuestionLabel">
+                            <fmt:message key="modal.newQuestionTitle"/>
+                        </h5>
                         <button type="button" class="btn-close"
                                 data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label for="questionText" class="form-label">Soru Metni</label>
+                            <label for="questionText" class="form-label">
+                                <fmt:message key="label.questionText"/>
+                            </label>
                             <input type="text" class="form-control"
                                    id="questionText" name="text" required/>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary"
-                                data-bs-dismiss="modal">İptal</button>
-                        <button type="submit" class="btn btn-primary">Ekle</button>
+                                data-bs-dismiss="modal">
+                            <fmt:message key="button.cancel"/>
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <fmt:message key="button.add"/>
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
+
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
