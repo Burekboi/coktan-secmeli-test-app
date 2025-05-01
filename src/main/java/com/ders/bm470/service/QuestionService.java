@@ -7,5 +7,6 @@ import java.util.List;
 public interface QuestionService {
     Question saveQuestion(Question question);
     List<Question> getAllQuestions();
-    // vs. ihtiyaç varsa...
+    Question getQuestionById(Long id);
+    void deleteQuestionById(Long id);
 }

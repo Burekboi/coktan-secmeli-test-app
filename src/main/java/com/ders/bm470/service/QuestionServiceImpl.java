@@ -1,4 +1,3 @@
-// src/main/java/com/ders/bm470/service/QuestionServiceImpl.java
 package com.ders.bm470.service;
 
 import com.ders.bm470.model.Question;
@@ -9,6 +8,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+/**
+ * QuestionServiceImpl Class – QuestionService arayüzündeki
+ * save, get, delete ve update operasyonlarını implemente eder.
+ */
 @Service
 public class QuestionServiceImpl implements QuestionService {
 
@@ -28,5 +31,16 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public List<Question> getAllQuestions() {
         return questionRepo.findAll();
+    }
+
+    @Override
+    public Question getQuestionById(Long id) {
+        return questionRepo.findById(id).orElse(null);
+    }
+
+    @Override
+    @Transactional
+    public void deleteQuestionById(Long id) {
+        questionRepo.deleteById(id);
     }
 }
