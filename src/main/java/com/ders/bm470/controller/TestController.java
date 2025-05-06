@@ -1,6 +1,6 @@
 package com.ders.bm470.controller;
-
-import com.ders.bm470.model.Test;
+import com.ders.bm470.model.*;
+import com.ders.bm470.service.QuestionService;
 import com.ders.bm470.service.TestService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +9,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import com.ders.bm470.model.Question;
+import com.ders.bm470.service.TestResultService;
+import com.ders.bm470.service.UserService;
+
+import java.security.Principal;
+
 
 import java.util.*;
 
@@ -17,10 +23,15 @@ import java.util.*;
 public class TestController {
 
     private final TestService testService;
+    private final UserService userService;
+    private final TestResultService testResultService;
+
 
     @Autowired
-    public TestController(TestService testService) {
+    public TestController(TestService testService, UserService userService, TestResultService testResultService) {
         this.testService = testService;
+        this.userService = userService;
+        this.testResultService = testResultService;
     }
 
     // Test oluşturma formu göstermek için
@@ -87,13 +98,6 @@ public class TestController {
         return "redirect:/home";
     }
 
-    // Bu, test çözüm süreci boyunca kullanılacak sabit liste (ileride servisten gelecek)
-    private final List<Map<String, Object>> exampleQuestions = List.of(
-            Map.of("text", "Türkiye'nin başkenti neresidir?",
-                    "options", List.of("İstanbul", "Ankara", "İzmir", "Bursa", "Antalya")),
-            Map.of("text", "2 + 2 işleminin sonucu nedir?",
-                    "options", List.of("2", "3", "4", "5", "6"))
-    );
 
     @GetMapping("/solve/{id}")
     public String solveTest(@PathVariable("id") Long testId,
@@ -101,21 +105,29 @@ public class TestController {
                             @SessionAttribute(name = "answers", required = false) List<String> answers,
                             Model model,
                             HttpSession session) {
+
+        Test test = testService.getTestWithAllDetails(testId);
+        List<Question> questions = test.getQuestions();
+
         if (answers == null) {
-            answers = new ArrayList<>(Collections.nCopies(exampleQuestions.size(), null));
+            answers = new ArrayList<>(Collections.nCopies(questions.size(), null));
             session.setAttribute("answers", answers);
         }
 
-        if (questionIndex >= exampleQuestions.size()) {
+        if (questionIndex >= questions.size()) {
             return "redirect:/tests/solve/" + testId + "/summary";
         }
 
+        Question currentQuestion = questions.get(questionIndex);
+
         model.addAttribute("testId", testId);
         model.addAttribute("questionIndex", questionIndex);
-        model.addAttribute("question", exampleQuestions.get(questionIndex));
+        model.addAttribute("question", currentQuestion);
         model.addAttribute("answers", answers);
+
         return "solve";
     }
+
 
     @PostMapping("/solve/{id}/answer")
     public String saveAnswer(@PathVariable("id") Long testId,
@@ -134,10 +146,53 @@ public class TestController {
     @GetMapping("/solve/{id}/summary")
     public String showSummary(@PathVariable("id") Long testId,
                               @SessionAttribute(name = "answers") List<String> answers,
-                              Model model) {
+                              HttpSession session,
+                              Model model,
+                              Principal principal) {
+
+        Test test = testService.getTestWithAllDetails(testId);
+        List<Question> questions = test.getQuestions();
+
+        int correct = 0;
+        int incorrect = 0;
+
+        for (int i = 0; i < questions.size(); i++) {
+            Question question = questions.get(i);
+            String userAnswer = answers.get(i);
+
+            Choice correctChoice = question.getChoices().stream()
+                    .filter(Choice::isCorrect)
+                    .findFirst()
+                    .orElse(null);
+
+            if (correctChoice != null && correctChoice.getText().equals(userAnswer)) {
+                correct++;
+            } else {
+                incorrect++;
+            }
+        }
+
+        // Kullanıcı bilgisi
+        String username = principal.getName();
+        User user = userService.findByUsername(username);
+
+        // Sonucu kaydet
+        TestResult result = TestResult.builder()
+                .correctCount(correct)
+                .incorrectCount(incorrect)
+                .user(user)
+                .test(test)
+                .build();
+
+        testResultService.saveResult(result);
+
+        // Model verileri
+        model.addAttribute("correct", correct);
+        model.addAttribute("incorrect", incorrect);
         model.addAttribute("answers", answers);
         model.addAttribute("testId", testId);
         return "summary";
     }
+
 
 }
