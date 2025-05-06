@@ -10,6 +10,8 @@ services:
       MYSQL_DATABASE: testdb
       MYSQL_USER: testuser
       MYSQL_PASSWORD: testpassword
+      TZ: Europe/Istanbul
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_turkish_ci
     ports:
       - "3306:3306"
     volumes:
