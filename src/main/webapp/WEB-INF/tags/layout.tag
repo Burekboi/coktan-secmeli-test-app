@@ -99,7 +99,7 @@
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                         <li>
-                            <a class="dropdown-item" href="<c:url value='/profile'/>">
+                            <a class="dropdown-item" href="<c:url value='/user/profile'/>">
                                 Profilim
                             </a>
                         </li>
