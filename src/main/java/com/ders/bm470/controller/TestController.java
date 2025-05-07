@@ -191,6 +191,7 @@ public class TestController {
         model.addAttribute("incorrect", incorrect);
         model.addAttribute("answers", answers);
         model.addAttribute("testId", testId);
+        session.removeAttribute("answers");
         return "summary";
     }
 

@@ -3,7 +3,7 @@
 
 <layout:layout pageTitle="Özet">
     <div class="container mt-4">
-        <h3>Test Cevap Özeti</h3>
+        <h3>Test Cevap Ozeti</h3>
         <ul class="list-group">
             <c:forEach var="ans" items="${answers}" varStatus="status">
                 <li class="list-group-item">

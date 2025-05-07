@@ -47,18 +47,6 @@
         </button>
 
         <div class="collapse navbar-collapse" id="mainNavbar">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link" href="<c:url value='/tests'/>">
-                        Test Yönetimi
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="<c:url value='/solve'/>">
-                        Test Çöz
-                    </a>
-                </li>
-            </ul>
 
             <ul class="navbar-nav ms-auto align-items-center">
                 <!-- Dil Seçici -->
@@ -99,11 +87,11 @@
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                         <li>
-                            <a class="dropdown-item" href="<c:url value='/user/profile'/>">
+                            <a class="dropdown-item" id="profile_navbar" href="<c:url value='/user/profile'/>">
                                 Profilim
                             </a>
                         </li>
-                        <li><hr class="dropdown-divider"></li>
+                        <li><hr class="dropdown-divider" id="menu-divider"></li>
                         <li>
                             <a class="dropdown-item text-danger" href="<c:url value='/logout'/>">
                                 Çıkış Yap
