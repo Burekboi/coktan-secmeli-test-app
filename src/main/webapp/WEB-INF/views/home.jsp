@@ -10,9 +10,18 @@
 <fmt:setLocale value="${param.lang == 'en' ? 'en' : 'tr'}" scope="session"/>
 <fmt:setBundle basename="messages"/>
 
-<layout:layout pageTitle="<fmt:message key='label.homePage'/>">
+<layout:layout pageTitle="Home">
     <c:choose>
         <c:when test="${isAdmin}">
+            <script>
+                const profile_section_on_navbar = document.getElementById("profile_navbar");
+                const menu_divider = document.getElementById("menu-divider");
+                const test_coz = document.getElementById("test-coz");
+                profile_section_on_navbar.style.display = "none";
+                menu_divider.style.display = "none";
+                test_coz.style.display = "none";
+
+            </script>
             <div class="row justify-content-center">
                 <div class="col-md-10">
                     <div class="card shadow-sm">
@@ -72,6 +81,10 @@
             </div>
         </c:when>
         <c:otherwise>
+            <script>
+                const test_yonetimi = document.getElementById("test-yonetimi");
+                test_yonetimi.style.display = "none";
+            </script>
             <div class="row justify-content-center">
                 <div class="col-md-8">
                     <div class="card shadow-sm">

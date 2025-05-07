@@ -1,97 +1,65 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<html>
-<head>
-    <title>Kullanıcı Profili</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background-color: #f4f6f8;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            max-width: 900px;
-            margin: 40px auto;
-            background-color: white;
-            padding: 30px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-            border-radius: 12px;
-        }
-        .profile-header {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        .avatar {
-            width: 90px;
-            height: 90px;
-            border-radius: 50%;
-            background-color: #ccc;
-            background-image: url('https://www.gravatar.com/avatar?d=mp');
-            background-size: cover;
-        }
-        .user-info h2 {
-            margin: 0;
-            color: #333;
-        }
-        .user-info p {
-            margin: 5px 0;
-            color: #666;
-        }
-        .stats {
-            margin-top: 20px;
-        }
-        .stats h3 {
-            color: #444;
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 5px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #eee;
-        }
-        th {
-            background-color: #fafafa;
-        }
-        .score {
-            font-weight: bold;
-            color: #007bff;
-        }
-    </style>
-</head>
-<body>
-<div class="container">
-    <div class="profile-header">
-        <div class="avatar"></div>
-        <div class="user-info">
-            <h2>${user.firstName} ${user.lastName}</h2>
-            <h3>${user.username}</h3>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="layout" tagdir="/WEB-INF/tags" %>
+
+<layout:layout pageTitle="Kullanıcı Profili">
+    <div class="container my-5">
+        <div class="profile-header d-flex align-items-center gap-4 mb-4">
+            <div class="avatar rounded-circle" style="
+                width: 90px;
+                height: 90px;
+                background-color: #ccc;
+                background-image: url('https://www.gravatar.com/avatar?d=mp');
+                background-size: cover;">
+            </div>
+            <div class="user-info">
+                <h2 class="mb-1">${user.firstName} ${user.lastName}</h2>
+                <h5 class="text-muted">@${user.username}</h5>
+            </div>
+        </div>
+
+        <div class="stats">
+            <h4 class="mb-3 border-bottom pb-2">Çözdüğü Testler</h4>
+            <div class="table-responsive">
+                <table class="table table-striped align-middle">
+                    <thead class="table-light">
+                    <tr>
+                        <th>Test Adı</th>
+                        <th>Doğru</th>
+                        <th>Yanlış</th>
+                        <th>Puan</th>
+                        <th>Çözüm Tarihi</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <c:forEach var="result" items="${results}">
+                        <tr>
+                            <td>${result.test.name}</td>
+                            <td class="text-success fw-semibold">${result.correctCount}</td>
+                            <td class="text-danger fw-semibold">${result.incorrectCount}</td>
+                            <td class="text-primary fw-bold">
+                                <c:set var="total" value="${result.correctCount + result.incorrectCount}" />
+                                <c:choose>
+                                    <c:when test="${total > 0}">
+                                        <fmt:formatNumber value="${(result.correctCount * 100.0) / total}" maxFractionDigits="1"/>%
+                                    </c:when>
+                                    <c:otherwise>0%</c:otherwise>
+                                </c:choose>
+                            </td>
+                            <td>
+                                <fmt:formatDate value="${result.createdAt}" pattern="dd.MM.yyyy HH:mm" />
+                            </td>
+                        </tr>
+                    </c:forEach>
+                    <c:if test="${empty results}">
+                        <tr>
+                            <td colspan="5" class="text-center text-muted">Henüz test çözülmemiş.</td>
+                        </tr>
+                    </c:if>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
-
-    <div class="stats">
-        <h3>Çözdüğü Testler</h3>
-        <table>
-            <thead>
-            <tr>
-                <th>Test Adı</th>
-                <th>Tarih</th>
-                <th>Puan</th>
-            </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-    </div>
-</div>
-</body>
-</html>
-
+</layout:layout>

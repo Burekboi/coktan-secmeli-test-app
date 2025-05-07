@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 public class TestServiceImpl implements TestService {
 
     private final TestRepository testRepository;
@@ -20,16 +21,12 @@ public class TestServiceImpl implements TestService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Test getTestWithAllDetails(Long id) {
-        return testRepository.findById(id)
-                .map(test -> {
-                    // questions ve her bir question'ın choices listesini initialize et
-                    test.getQuestions().forEach(q -> q.getChoices().size());
-                    return test;
-                })
-                .orElse(null);
+        Test test = testRepository.findById(id).orElseThrow();
+        test.getQuestions().forEach(q -> q.getChoices().size()); // Lazy fetch tetikleme
+        return test;
     }
+
 
     @Override
     @Transactional
