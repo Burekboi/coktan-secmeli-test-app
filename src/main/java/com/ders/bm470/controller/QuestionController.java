@@ -28,10 +28,11 @@ public class QuestionController {
                                  Model model) {
         Question question = new Question();
         model.addAttribute("question", question);
-        model.addAttribute("tests", testService.getTestById(testId));
+        if (testId != null) {
+            model.addAttribute("tests", testService.getTestById(testId));
+        }
         return "create_question";
     }
-
     // Yeni soruyu kaydet
     @PostMapping("/create/{testId}")
     public String createQuestion(@ModelAttribute("question") Question question,
