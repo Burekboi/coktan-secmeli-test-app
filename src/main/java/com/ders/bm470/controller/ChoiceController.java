@@ -48,11 +48,13 @@ public class ChoiceController {
 
     // Şık düzenleme formunu göster
     @GetMapping("/edit/{id}")
-    public String showEditForm(@PathVariable("id") Long choiceId,
-                               Model model) {
+    public String showEditForm(@PathVariable("id") Long choiceId, Model model) {
         Choice choice = choiceService.getChoiceById(choiceId);
+        if (choice == null) {
+            throw new RuntimeException("Choice not found with id: " + choiceId);
+        }
         model.addAttribute("choice", choice);
-        return "edit_choice";  // edit_choice.jsp
+        return "edit_choice";
     }
 
     // Düzenlenen şıkkı kaydet
