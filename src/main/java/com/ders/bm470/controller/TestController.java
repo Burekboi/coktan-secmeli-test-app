@@ -12,6 +12,8 @@ import org.springframework.web.server.ResponseStatusException;
 import com.ders.bm470.model.Question;
 import com.ders.bm470.service.TestResultService;
 import com.ders.bm470.service.UserService;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.security.Principal;
 
@@ -33,8 +35,8 @@ public class TestController {
         this.userService = userService;
         this.testResultService = testResultService;
     }
-
     // Test oluşturma formu göstermek için
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/create")
     public String showCreateTestForm(Model model) {
         model.addAttribute("test", new Test());
@@ -49,6 +51,7 @@ public class TestController {
     }
 
     // Test detay sayfası
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/detail/{testId}")
     public String showTestDetail(@PathVariable("testId") Long testId, Model model) {
         Test test = testService.getTestWithAllDetails(testId);
@@ -60,6 +63,7 @@ public class TestController {
     }
 
     // Test düzenleme formu göstermek için
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/edit/{testId}")
     public String showEditTestForm(@PathVariable("testId") Long testId, Model model) {
         Test test = testService.getTestById(testId);
@@ -92,12 +96,12 @@ public class TestController {
 
 
     // Test silme işlemi
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/delete/{testId}")
     public String deleteTest(@PathVariable("testId") Long testId) {
         testService.deleteTest(testId);
         return "redirect:/home";
     }
-
 
     @GetMapping("/solve/{id}")
     public String solveTest(@PathVariable("id") Long testId,
@@ -127,7 +131,6 @@ public class TestController {
 
         return "solve";
     }
-
 
     @PostMapping("/solve/{id}/answer")
     public String saveAnswer(@PathVariable("id") Long testId,

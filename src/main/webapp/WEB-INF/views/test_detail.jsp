@@ -8,9 +8,18 @@
 <fmt:setLocale value="${param.lang}" scope="session"/>
 <fmt:setBundle basename="messages"/>
 
+
+
 <layout:layout pageTitle='<fmt:message key="page.testDetail"/> – ${test.name}'>
+    <c:if test="${not empty errorMessage}">
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                ${errorMessage}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </c:if>
+
     <c:choose>
-        <c:when test="${empty test}">
+        <c:when test="${empty test and empty errorMessage}">
             <div class="alert alert-danger">
                 <fmt:message key="error.testNotFound"/>
             </div>

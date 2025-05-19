@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 @Controller
 @RequestMapping("/choices")
@@ -22,7 +23,7 @@ public class ChoiceController {
         this.choiceService = choiceService;
         this.questionService = questionService;
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     // Şık oluşturma formunu göster
     @GetMapping("/create")
     public String showCreateForm(@RequestParam("questionId") Long questionId,
@@ -46,7 +47,7 @@ public class ChoiceController {
         return "redirect:/tests/detail/" + testId;
     }
 
-    // Şık düzenleme formunu göster
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable("id") Long choiceId, Model model) {
         Choice choice = choiceService.getChoiceById(choiceId);
@@ -71,6 +72,7 @@ public class ChoiceController {
     }
 
     // Şık silme işlemi
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/delete/{id}")
     public String deleteChoice(@PathVariable("id") Long choiceId) {
         Choice c = choiceService.getChoiceById(choiceId);
@@ -78,4 +80,6 @@ public class ChoiceController {
         choiceService.deleteChoiceById(choiceId);
         return "redirect:/tests/detail/" + testId;
     }
+
+
 }

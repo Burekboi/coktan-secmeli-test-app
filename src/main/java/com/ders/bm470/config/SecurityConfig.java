@@ -16,17 +16,21 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Arrays;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+
 
 @Configuration
 @ComponentScan(basePackages = "com.ders.bm470.security")
 @EnableWebSecurity
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
     private final UserDetailsService userDetailsService;
 
-    public SecurityConfig(UserDetailsService userDetailsService) {
+    public SecurityConfig(@Qualifier("customUserDetailsService")UserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
     }
 
@@ -82,7 +86,7 @@ public class SecurityConfig {
         return provider;
     }
 
-    @Bean
+    @Bean(name = "inMemoryUserDetailsService")
     public UserDetailsService inMemoryUserDetailsService() {
         UserDetails admin = User.builder()
                 .username("admin")
