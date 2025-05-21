@@ -22,6 +22,13 @@
                 test_coz.style.display = "none";
 
             </script>
+            <script>
+                document.getElementById('confirmDeleteBtn')
+                .addEventListener('click', () => {
+                console.log("Silme URL'si:", deleteUrl); // 💥 bu satırı ekle
+                if (deleteUrl) window.location.href = deleteUrl;
+                });
+            </script>
             <div class="row justify-content-center">
                 <div class="col-md-10">
                     <div class="card shadow-sm">
@@ -56,11 +63,11 @@
                                                     data-test-name="${test.name}">
                                                 <fmt:message key="button.edit"/>
                                             </button>
-                                            <a href="#"
+                                            <button
                                                class="btn btn-sm btn-danger delete-test-btn"
                                                data-delete-url="${ctx}/tests/delete/${test.id}">
                                                 <fmt:message key="button.delete"/>
-                                            </a>
+                                            </button>
                                             <button type="button"
                                                     class="btn btn-sm btn-info create-question-btn"
                                                     data-test-id="${test.id}">
@@ -96,10 +103,12 @@
                                 <c:forEach var="test" items="${tests}">
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
                                             ${test.name}
-                                        <a href="<c:url value='/tests/solve/${test.id}'/>"
-                                           class="btn btn-sm btn-success">
+                                                <button
+                                                type="button"
+                                                class="btn btn-sm btn-success solve-btn"
+                                                data-solve-url="${ctx}/tests/solve/${test.id}">
                                             <fmt:message key="button.solveTest"/>
-                                        </a>
+                                                </button>
                                     </li>
                                 </c:forEach>
                             </ul>
@@ -107,6 +116,34 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Önceki Sonuç Modalı -->
+            <div class="modal fade" id="lastResultModal" tabindex="-1" aria-labelledby="lastResultLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="lastResultLabel">
+                                Bu Test daha önce çözüldü
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p><strong>doğru:</strong> <span id="prevCorrect"></span></p>
+                            <p><strong>yanlış:</strong> <span id="prevIncorrect"></span></p>
+                            <p>tekrar çöz</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                <fmt:message key="button.cancel"/>
+                            </button>
+                            <button type="button" class="btn btn-success" id="confirmSolveAgainBtn">
+                                Tekrar Çöz
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </c:otherwise>
     </c:choose>
 
@@ -211,16 +248,13 @@
         </div>
     </div>
 
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const ctx = '${ctx}';
 
-            // Silme işlemi
+            // ✅ Test Silme Modalı
             let deleteUrl = null;
-            const delModal = new bootstrap.Modal(
-                document.getElementById('confirmDeleteModal')
-            );
+            const delModal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
             document.querySelectorAll('.delete-test-btn').forEach(btn => {
                 btn.addEventListener('click', e => {
                     e.preventDefault();
@@ -228,16 +262,13 @@
                     delModal.show();
                 });
             });
-            document.getElementById('confirmDeleteBtn')
-                .addEventListener('click', () => {
-                    if (deleteUrl) window.location.href = deleteUrl;
-                });
+            document.getElementById('confirmDeleteBtn')?.addEventListener('click', () => {
+                if (deleteUrl) window.location.href = deleteUrl;
+            });
 
-            // Test düzenle / oluştur
-            const editModal = new bootstrap.Modal(
-                document.getElementById('editTestModal')
-            );
-            const editForm  = document.getElementById('editTestForm');
+            // ✅ Test Düzenleme / Oluşturma Modalı
+            const editModal = new bootstrap.Modal(document.getElementById('editTestModal'));
+            const editForm = document.getElementById('editTestForm');
             const nameInput = document.getElementById('testName');
             document.querySelectorAll('.edit-test-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
@@ -254,12 +285,10 @@
                 });
             });
 
-            // Soru oluştur
-            const createModal = new bootstrap.Modal(
-                document.getElementById('createQuestionModal')
-            );
-            const createForm  = document.getElementById('createQuestionForm');
-            const qInput      = document.getElementById('questionText');
+            // ✅ Soru Oluşturma Modalı
+            const createModal = new bootstrap.Modal(document.getElementById('createQuestionModal'));
+            const createForm = document.getElementById('createQuestionForm');
+            const qInput = document.getElementById('questionText');
             document.querySelectorAll('.create-question-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const testId = btn.getAttribute('data-test-id');
@@ -272,6 +301,54 @@
                     createModal.show();
                 });
             });
+
+            // ✅ Test Çözme Öncesi Sonuç Kontrolü Modalı
+            const lastResultModalEl = document.getElementById('lastResultModal');
+            const lastResultModal = lastResultModalEl ? new bootstrap.Modal(lastResultModalEl) : null;
+            const prevCorrectEl = document.getElementById('prevCorrect');
+            const prevIncorrectEl = document.getElementById('prevIncorrect');
+            const confirmSolveBtn = document.getElementById('confirmSolveAgainBtn');
+            let solveRedirectUrl = null;
+
+            document.querySelectorAll('.solve-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    console.log("tetiklendi");
+                    e.preventDefault();
+
+                    const solveUrl = btn.getAttribute('data-solve-url');
+                    console.log(solveUrl);
+                    const parts = solveUrl.split('/');
+                    let testId = parts[parts.length - 1];
+                    console.log(testId);
+
+
+                    fetch(`${ctx}/tests/last-result/1`, {
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.solvedBefore && lastResultModal) {
+                                prevCorrectEl.textContent = data.correct;
+                                prevIncorrectEl.textContent = data.incorrect;
+                                solveRedirectUrl = solveUrl;
+                                lastResultModal.show();
+                            }
+                        })
+                        .catch(err => {
+                            console.error("Kontrol hatası:", err);
+
+                        });
+                });
+            });
+
+            confirmSolveBtn?.addEventListener('click', function() {
+                if (solveRedirectUrl) {
+                    window.location.href = solveRedirectUrl;
+                }
+            });
         });
     </script>
+
 </layout:layout>

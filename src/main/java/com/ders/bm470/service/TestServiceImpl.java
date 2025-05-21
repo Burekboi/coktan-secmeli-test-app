@@ -46,7 +46,10 @@ public class TestServiceImpl implements TestService {
     }
 
     @Override
+    @Transactional
     public void deleteTest(Long id) {
+        System.out.println(">>> SİLME İŞLEMİ ÇALIŞTI ID = " + id);
         testRepository.deleteById(id);
+
     }
 }

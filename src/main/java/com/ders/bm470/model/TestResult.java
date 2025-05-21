@@ -27,10 +27,10 @@ public class TestResult {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
+
 
     @PrePersist
     public void onCreate() {
