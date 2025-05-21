@@ -31,19 +31,19 @@ public class ChoiceServiceImpl implements ChoiceService {
                 throw new IllegalArgumentException("Şık bir soruya bağlı olmalıdır.");
             }
 
-            // Veritabanından güvenli şekilde al
+            // Mevcut question'ı veritabanından çek
             Question existingQuestion = questionService.getQuestionById(question.getId());
 
-            long correctCount = existingQuestion.getChoices().stream()
-                    .filter(Choice::isCorrect)
-                    .count();
-
-            if (correctCount >= 1) {
-                throw new IllegalArgumentException("Bu soruya ait zaten bir doğru şık var!");
-            }
+            // O soruya ait tüm şıkları gezip varsa doğru olanı pasifleştir
+            existingQuestion.getChoices().forEach(c -> {
+                if (c.isCorrect()) {
+                    c.setCorrect(false); // önceki doğruyu sıfırla
+                    choiceRepo.save(c);  // update et
+                }
+            });
         }
 
-        return choiceRepo.save(choice);
+        return choiceRepo.save(choice); // yeni şıkkı kaydet
     }
 
 

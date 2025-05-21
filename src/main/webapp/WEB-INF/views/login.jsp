@@ -84,7 +84,7 @@
 
                     <div class="mb-3">
                         <label for="password" class="form-label">Şifre</label>
-                        <input type="password" class="form-control" id="password" name="password" required />
+                        <input type="password" class="form-control" id="password" minlength="8" name="password" required />
                     </div>
 
                     <div class="d-grid">

@@ -4,6 +4,7 @@
 <%@ taglib prefix="layout" tagdir="/WEB-INF/tags" %>
 
 <layout:layout pageTitle="Kullanıcı Profili">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <div class="container my-5">
         <div class="profile-header d-flex align-items-center gap-4 mb-4">
             <div class="avatar rounded-circle" style="
@@ -42,16 +43,53 @@
                                 <c:set var="total" value="${result.correctCount + result.incorrectCount}" />
                                 <c:choose>
                                     <c:when test="${total > 0}">
-                                        <fmt:formatNumber value="${(result.correctCount * 100.0) / total}" maxFractionDigits="1"/>%
+                                        <fmt:formatNumber var="successRate" value="${(result.correctCount * 100.0) / total}" maxFractionDigits="1"/>
+                                        ${successRate}%
                                     </c:when>
-                                    <c:otherwise>0%</c:otherwise>
+                                    <c:otherwise>
+                                        <c:set var="successRate" value="0" />
+                                        0%
+                                    </c:otherwise>
                                 </c:choose>
                             </td>
                             <td>
                                 <fmt:formatDate value="${result.createdAt}" pattern="dd.MM.yyyy HH:mm" />
                             </td>
                         </tr>
+                        <tr>
+                            <td colspan="5" class="text-center">
+                                <canvas id="chart-${result.id}" width="200" height="200"></canvas>
+                                <script>
+                                    const ctx${result.id} = document.getElementById('chart-${result.id}').getContext('2d');
+                                    new Chart(ctx${result.id}, {
+                                        type: 'pie',
+                                        data: {
+                                            labels: ['Doğru', 'Yanlış'],
+                                            datasets: [{
+                                                label: 'Başarı',
+                                                data: [${result.correctCount}, ${result.incorrectCount}],
+                                                backgroundColor: ['#198754', '#dc3545'],
+                                                borderWidth: 1
+                                            }]
+                                        },
+                                        options: {
+                                            responsive: false,
+                                            plugins: {
+                                                legend: {
+                                                    position: 'bottom'
+                                                },
+                                                title: {
+                                                    display: true,
+                                                    text: 'Başarı Dağılımı'
+                                                }
+                                            }
+                                        }
+                                    });
+                                </script>
+                            </td>
+                        </tr>
                     </c:forEach>
+
                     <c:if test="${empty results}">
                         <tr>
                             <td colspan="5" class="text-center text-muted">Henüz test çözülmemiş.</td>

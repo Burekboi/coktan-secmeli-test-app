@@ -7,7 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import com.ders.bm470.model.User;
-
+import java.util.Optional;
+import org.springframework.data.domain.Pageable;
 
 
 
@@ -27,4 +28,10 @@ public class TestResultServiceImpl implements TestResultService {
     public List<TestResult> getResultsByUser(User user) {
         return testResultRepository.findByUser(user);
     }
+
+    @Override
+    public Optional<TestResult> findLastResultForUser(Long testId, String username) {
+        return testResultRepository.findTopByTest_IdAndUser_UsernameOrderByCreatedAtDesc(testId, username);
+    }
+
 }

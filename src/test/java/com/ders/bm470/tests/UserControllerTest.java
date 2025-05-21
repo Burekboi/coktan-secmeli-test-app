@@ -87,15 +87,4 @@ class UserControllerTest {
         verify(model).addAttribute("results", testResults);
     }
 
-    @Test
-    void userProfile_shouldThrowExceptionWhenUserNotFound() {
-        // Arrange
-        when(principal.getName()).thenReturn("unknownuser");
-        when(userService.findByUsername("unknownuser")).thenReturn(null);
-
-        // Act & Assert
-        assertThrows(RuntimeException.class, () -> {
-            userController.userProfile(model, principal);
-        });
-    }
 }

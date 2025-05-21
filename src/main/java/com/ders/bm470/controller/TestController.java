@@ -13,7 +13,7 @@ import com.ders.bm470.model.Question;
 import com.ders.bm470.service.TestResultService;
 import com.ders.bm470.service.UserService;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.http.ResponseEntity;
 
 import java.security.Principal;
 
@@ -96,7 +96,6 @@ public class TestController {
 
 
     // Test silme işlemi
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/delete/{testId}")
     public String deleteTest(@PathVariable("testId") Long testId) {
         testService.deleteTest(testId);
@@ -197,6 +196,32 @@ public class TestController {
         session.removeAttribute("answers");
         return "summary";
     }
+
+    @GetMapping(value= "/last-result/{testId}",  produces = "application/json")
+    @ResponseBody
+    public ResponseEntity<?> getLastResult(@PathVariable("testId") Long testId, Principal principal) {
+        if (principal == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of(
+                    "solvedBefore", false,
+                    "error", "User not authenticated"
+            ));
+        }
+
+        Optional<TestResult> lastResultOpt = testResultService.findLastResultForUser(testId, principal.getName());
+        System.out.println("lastResulOpt");
+        if (lastResultOpt.isPresent()) {
+            System.out.println(lastResultOpt.get());
+            TestResult result = lastResultOpt.get();
+            Map<String, Object> data = new HashMap<>();
+            data.put("solvedBefore", true);
+            data.put("correct", result.getCorrectCount());
+            data.put("incorrect", result.getIncorrectCount());
+            return ResponseEntity.ok(data);
+        } else {
+            return ResponseEntity.ok(Collections.singletonMap("solvedBefore", false));
+        }
+    }
+
 
 
 }
